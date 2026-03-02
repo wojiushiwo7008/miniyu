@@ -68,22 +68,45 @@ async function handleMessage(event) {
     return;
   }
 
-  // Only handle text messages
-  if (message.message_type !== 'text') {
-    return;
+  const messageType = message.message_type;
+
+  // Handle text messages
+  if (messageType === 'text') {
+    const content = JSON.parse(message.content);
+    const userMessage = content.text;
+
+    console.log(`Received text message: ${userMessage}`);
+
+    // Generate AI response using DeepSeek
+    const aiResponse = await deepseekService.generateResponse(userMessage);
+    console.log(`AI Response: ${aiResponse}`);
+
+    // Send reply to Feishu
+    await feishuService.sendMessage(message.message_id, aiResponse);
   }
+  // Handle image messages
+  else if (messageType === 'image') {
+    const content = JSON.parse(message.content);
+    const imageKey = content.image_key;
 
-  const content = JSON.parse(message.content);
-  const userMessage = content.text;
+    console.log(`Received image message, image_key: ${imageKey}`);
 
-  console.log(`Received message: ${userMessage}`);
+    try {
+      // Download image from Feishu
+      const base64Image = await feishuService.getImageContent(imageKey);
+      console.log('Image downloaded successfully');
 
-  // Generate AI response using DeepSeek
-  const aiResponse = await deepseekService.generateResponse(userMessage);
-  console.log(`AI Response: ${aiResponse}`);
+      // Generate copywriting from image
+      const copywriting = await deepseekService.generateCopywritingFromImage(base64Image);
+      console.log(`Generated copywriting: ${copywriting}`);
 
-  // Send reply to Feishu
-  await feishuService.sendMessage(message.message_id, aiResponse);
+      // Send reply to Feishu
+      await feishuService.sendMessage(message.message_id, copywriting);
+    } catch (error) {
+      console.error('Error processing image:', error.message);
+      await feishuService.sendMessage(message.message_id, '抱歉，处理图片时出错了，请稍后再试。');
+    }
+  }
 }
 
 const PORT = process.env.PORT || 3000;

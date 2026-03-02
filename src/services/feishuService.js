@@ -40,6 +40,30 @@ class FeishuService {
     }
   }
 
+  // Get image content
+  async getImageContent(imageKey) {
+    try {
+      const token = await this.getTenantAccessToken();
+
+      const response = await axios.get(
+        `https://open.feishu.cn/open-apis/im/v1/images/${imageKey}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          responseType: 'arraybuffer'
+        }
+      );
+
+      // Convert to base64
+      const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+      return base64Image;
+    } catch (error) {
+      console.error('Error getting image:', error.message);
+      throw error;
+    }
+  }
+
   // Send reply message
   async sendMessage(messageId, content) {
     try {
