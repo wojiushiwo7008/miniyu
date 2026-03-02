@@ -41,12 +41,12 @@ class FeishuService {
   }
 
   // Get image content
-  async getImageContent(imageKey) {
+  async getImageContent(messageId, imageKey) {
     try {
       const token = await this.getTenantAccessToken();
 
       const response = await axios.get(
-        `https://open.feishu.cn/open-apis/im/v1/images/${imageKey}`,
+        `https://open.feishu.cn/open-apis/im/v1/messages/${messageId}/resources/${imageKey}?type=image`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -60,6 +60,9 @@ class FeishuService {
       return base64Image;
     } catch (error) {
       console.error('Error getting image:', error.message);
+      if (error.response) {
+        console.error('Image API Error:', JSON.stringify(error.response.data));
+      }
       throw error;
     }
   }

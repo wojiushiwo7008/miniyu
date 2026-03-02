@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const feishuService = require('./services/feishuService');
 const deepseekService = require('./services/deepseekService');
+const claudeService = require('./services/claudeService');
 
 const app = express();
 
@@ -93,11 +94,11 @@ async function handleMessage(event) {
 
     try {
       // Download image from Feishu
-      const base64Image = await feishuService.getImageContent(imageKey);
+      const base64Image = await feishuService.getImageContent(message.message_id, imageKey);
       console.log('Image downloaded successfully');
 
-      // Generate copywriting from image
-      const copywriting = await deepseekService.generateCopywritingFromImage(base64Image);
+      // Generate copywriting from image using Claude
+      const copywriting = await claudeService.generateCopywritingFromImage(base64Image);
       console.log(`Generated copywriting: ${copywriting}`);
 
       // Send reply to Feishu
