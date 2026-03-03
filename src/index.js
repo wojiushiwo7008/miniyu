@@ -97,8 +97,8 @@ async function handleMessage(event) {
       const aiResponse = await deepseekService.generateResponse(userMessage);
       console.log(`AI Response: ${aiResponse}`);
 
-      // Try to reply to the message directly
-      await feishuService.sendReply(messageId, aiResponse);
+      // Send message to chat instead of replying
+      await feishuService.sendMessage(chatId, aiResponse, 'chat_id');
     } catch (error) {
       console.error('Error in text message handling:', error.message);
     }
