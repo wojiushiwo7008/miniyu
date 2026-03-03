@@ -1,8 +1,11 @@
-name: Auto Deploy to Server
+name: Auto Deploy to Server (Disabled)
+
+# 由于 GitHub Actions 无法连接服务器，已禁用自动部署
+# 请使用本地部署脚本: local-deploy.ps1 或 local-deploy.sh
 
 on:
-  push:
-    branches: [ feature/optima-real-estate-ai ]
+  # push:
+  #   branches: [ feature/optima-real-estate-ai ]
   workflow_dispatch:
 
 jobs:

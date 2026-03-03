@@ -1,0 +1,13 @@
+{
+  "name": "deploy-webhook",
+  "version": "1.0.0",
+  "description": "GitHub webhook service for auto deployment",
+  "main": "deploy-webhook.js",
+  "scripts": {
+    "start": "node deploy-webhook.js",
+    "pm2": "pm2 start deploy-webhook.js --name webhook"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
