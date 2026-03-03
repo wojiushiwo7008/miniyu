@@ -2,10 +2,15 @@
 
 echo "开始部署..."
 
-# 拉取最新代码
-git fetch origin
-git checkout feature/optima-real-estate-ai
-git pull origin feature/optima-real-estate-ai
+# 下载最新代码（使用 wget 代替 git pull）
+cd ~
+rm -f miniyu.tar.gz
+wget -q https://github.com/wojiushiwo7008/miniyu/archive/refs/heads/feature/optima-real-estate-ai.tar.gz -O miniyu.tar.gz
+tar -xzf miniyu.tar.gz
+rm -rf miniyu.bak
+mv miniyu miniyu.bak 2>/dev/null || true
+mv miniyu-feature-optima-real-estate-ai miniyu
+cd miniyu
 
 # 创建 .env 文件
 cat > .env << 'EOF'
