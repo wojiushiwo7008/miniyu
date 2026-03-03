@@ -1,0 +1,55 @@
+name: Auto Deploy to Server
+
+on:
+  push:
+    branches: [ feature/optima-real-estate-ai ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: www.woaixiaoyu.xyz
+          username: bxn818204
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 5666
+          script: |
+            cd ~
+            if [ -d "miniyu" ]; then
+              cd miniyu
+              git fetch origin
+              git checkout feature/optima-real-estate-ai
+              git pull origin feature/optima-real-estate-ai
+            else
+              git clone https://github.com/wojiushiwo7008/miniyu.git
+              cd miniyu
+              git checkout feature/optima-real-estate-ai
+            fi
+
+            cat > .env << 'EOF'
+            FEISHU_APP_ID=cli_a92eb7bf7d22dbd3
+            FEISHU_APP_SECRET=7n8j6zlj2MEqYJRFKaCNLdzC6xkUnKEc
+            DEEPSEEK_API_KEY=sk-93a526f81c5a4ab9ae22f0fa33071b35
+            CLAUDE_API_KEY=sk-qB2fhoAQqIfFx2I2Gplcw0wo9w9l6nzwOpTRaEhRG0ua1NU4
+            PORT=3001
+            EOF
+
+            docker-compose down 2>/dev/null || true
+            docker-compose up -d --build
+
+            echo "Waiting for container to start..."
+            sleep 5
+
+            echo "=== Container Status ==="
+            docker ps | grep feishu || docker ps
+
+            echo ""
+            echo "=== Container Logs ==="
+            docker logs --tail 30 feishu-deepseek-bot || echo "Container not found"
