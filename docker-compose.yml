@@ -8,4 +8,4 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-    container_name: feishu-deepseek-bot
+    container_name: cc-dp-pyq

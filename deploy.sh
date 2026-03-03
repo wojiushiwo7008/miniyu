@@ -32,4 +32,4 @@ docker-compose up -d --build
 
 echo "部署完成！"
 echo "容器状态："
-docker ps | grep feishu
+docker ps | grep cc-dp-pyq
