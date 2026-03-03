@@ -64,6 +64,8 @@ app.post('/webhook', async (req, res) => {
 async function handleMessage(event) {
   const { message, sender } = event;
 
+  console.log('Full event data:', JSON.stringify(event, null, 2));
+
   // Skip bot's own messages
   if (sender.sender_type === 'app') {
     return;
@@ -71,8 +73,15 @@ async function handleMessage(event) {
 
   const messageType = message.message_type;
   const chatId = message.chat_id;
+  const chatType = message.chat_type;
 
   console.log(`Chat ID: ${chatId}`);
+  console.log(`Chat Type: ${chatType}`);
+
+  if (!chatId) {
+    console.error('No chat_id found in message');
+    return;
+  }
 
   // Handle text messages
   if (messageType === 'text') {
@@ -86,7 +95,7 @@ async function handleMessage(event) {
     console.log(`AI Response: ${aiResponse}`);
 
     // Send message to chat
-    await feishuService.sendMessage(chatId, aiResponse);
+    await feishuService.sendMessage(chatId, aiResponse, 'chat_id');
   }
   // Handle image messages
   else if (messageType === 'image') {
@@ -105,10 +114,10 @@ async function handleMessage(event) {
       console.log(`Generated copywriting: ${copywriting}`);
 
       // Send message to chat
-      await feishuService.sendMessage(chatId, copywriting);
+      await feishuService.sendMessage(chatId, copywriting, 'chat_id');
     } catch (error) {
       console.error('Error processing image:', error.message);
-      await feishuService.sendMessage(chatId, '抱歉，处理图片时出错了，请稍后再试。');
+      await feishuService.sendMessage(chatId, '抱歉，处理图片时出错了，请稍后再试。', 'chat_id');
     }
   }
 }
