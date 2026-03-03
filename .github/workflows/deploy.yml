@@ -18,7 +18,7 @@ jobs:
         with:
           host: www.woaixiaoyu.xyz
           username: bxn818204
-          password: ${{ secrets.SERVER_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 5666
           script: |
             cd ~
