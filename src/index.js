@@ -70,6 +70,9 @@ async function handleMessage(event) {
   }
 
   const messageType = message.message_type;
+  const chatId = message.chat_id;
+
+  console.log(`Chat ID: ${chatId}`);
 
   // Handle text messages
   if (messageType === 'text') {
@@ -82,8 +85,8 @@ async function handleMessage(event) {
     const aiResponse = await deepseekService.generateResponse(userMessage);
     console.log(`AI Response: ${aiResponse}`);
 
-    // Send reply to Feishu
-    await feishuService.sendMessage(message.message_id, aiResponse);
+    // Send message to chat
+    await feishuService.sendMessage(chatId, aiResponse);
   }
   // Handle image messages
   else if (messageType === 'image') {
@@ -101,11 +104,11 @@ async function handleMessage(event) {
       const copywriting = await claudeService.generateCopywritingFromImage(base64Image);
       console.log(`Generated copywriting: ${copywriting}`);
 
-      // Send reply to Feishu
-      await feishuService.sendMessage(message.message_id, copywriting);
+      // Send message to chat
+      await feishuService.sendMessage(chatId, copywriting);
     } catch (error) {
       console.error('Error processing image:', error.message);
-      await feishuService.sendMessage(message.message_id, '抱歉，处理图片时出错了，请稍后再试。');
+      await feishuService.sendMessage(chatId, '抱歉，处理图片时出错了，请稍后再试。');
     }
   }
 }

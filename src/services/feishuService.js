@@ -67,20 +67,22 @@ class FeishuService {
     }
   }
 
-  // Send reply message
-  async sendMessage(messageId, content) {
+  // Send message to chat
+  async sendMessage(chatId, content, receiveIdType = 'chat_id') {
     try {
       const token = await this.getTenantAccessToken();
 
       const payload = {
+        receive_id: chatId,
         content: JSON.stringify({ text: content }),
         msg_type: 'text'
       };
 
       console.log('Sending message payload:', JSON.stringify(payload));
+      console.log('Receive ID type:', receiveIdType);
 
       const response = await axios.post(
-        `https://open.feishu.cn/open-apis/im/v1/messages/${messageId}/reply`,
+        `https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=${receiveIdType}`,
         payload,
         {
           headers: {
