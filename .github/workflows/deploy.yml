@@ -41,6 +41,15 @@ jobs:
             PORT=3002
             EOF
 
+            # 开放 3002 端口
+            if command -v ufw &> /dev/null; then
+              sudo ufw allow 3002/tcp 2>/dev/null || true
+            fi
+            if command -v firewall-cmd &> /dev/null; then
+              sudo firewall-cmd --permanent --add-port=3002/tcp 2>/dev/null || true
+              sudo firewall-cmd --reload 2>/dev/null || true
+            fi
+
             docker-compose down 2>/dev/null || true
             docker-compose up -d --build
 
