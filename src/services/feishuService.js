@@ -106,6 +106,45 @@ class FeishuService {
       throw error;
     }
   }
+
+  // Reply to a message
+  async sendReply(messageId, content) {
+    try {
+      const token = await this.getTenantAccessToken();
+
+      const payload = {
+        content: JSON.stringify({ text: content }),
+        msg_type: 'text'
+      };
+
+      console.log('Sending reply to message:', messageId);
+      console.log('Reply payload:', JSON.stringify(payload));
+
+      const response = await axios.post(
+        `https://open.feishu.cn/open-apis/im/v1/messages/${messageId}/reply`,
+        payload,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data.code === 0) {
+        console.log('Reply sent successfully');
+        return response.data;
+      } else {
+        throw new Error(`Failed to send reply: ${response.data.msg}`);
+      }
+    } catch (error) {
+      console.error('Error sending reply:', error.message);
+      if (error.response) {
+        console.error('Reply API Error detail:', JSON.stringify(error.response.data));
+      }
+      throw error;
+    }
+  }
 }
 
 module.exports = new FeishuService();

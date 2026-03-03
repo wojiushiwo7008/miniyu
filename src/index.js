@@ -74,9 +74,11 @@ async function handleMessage(event) {
   const messageType = message.message_type;
   const chatId = message.chat_id;
   const chatType = message.chat_type;
+  const messageId = message.message_id;
 
   console.log(`Chat ID: ${chatId}`);
   console.log(`Chat Type: ${chatType}`);
+  console.log(`Message ID: ${messageId}`);
 
   if (!chatId) {
     console.error('No chat_id found in message');
@@ -90,12 +92,16 @@ async function handleMessage(event) {
 
     console.log(`Received text message: ${userMessage}`);
 
-    // Generate AI response using DeepSeek
-    const aiResponse = await deepseekService.generateResponse(userMessage);
-    console.log(`AI Response: ${aiResponse}`);
+    try {
+      // Generate AI response using DeepSeek
+      const aiResponse = await deepseekService.generateResponse(userMessage);
+      console.log(`AI Response: ${aiResponse}`);
 
-    // Send message to chat
-    await feishuService.sendMessage(chatId, aiResponse, 'chat_id');
+      // Try to reply to the message directly
+      await feishuService.sendReply(messageId, aiResponse);
+    } catch (error) {
+      console.error('Error in text message handling:', error.message);
+    }
   }
   // Handle image messages
   else if (messageType === 'image') {
@@ -106,18 +112,22 @@ async function handleMessage(event) {
 
     try {
       // Download image from Feishu
-      const base64Image = await feishuService.getImageContent(message.message_id, imageKey);
+      const base64Image = await feishuService.getImageContent(messageId, imageKey);
       console.log('Image downloaded successfully');
 
       // Generate copywriting from image using Claude
       const copywriting = await claudeService.generateCopywritingFromImage(base64Image);
       console.log(`Generated copywriting: ${copywriting}`);
 
-      // Send message to chat
-      await feishuService.sendMessage(chatId, copywriting, 'chat_id');
+      // Try to reply to the message directly
+      await feishuService.sendReply(messageId, copywriting);
     } catch (error) {
       console.error('Error processing image:', error.message);
-      await feishuService.sendMessage(chatId, '抱歉，处理图片时出错了，请稍后再试。', 'chat_id');
+      try {
+        await feishuService.sendReply(messageId, '抱歉，处理图片时出错了，请稍后再试。');
+      } catch (replyError) {
+        console.error('Failed to send error message:', replyError.message);
+      }
     }
   }
 }
