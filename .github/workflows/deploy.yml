@@ -38,7 +38,7 @@ jobs:
             FEISHU_APP_SECRET=7n8j6zlj2MEqYJRFKaCNLdzC6xkUnKEc
             DEEPSEEK_API_KEY=sk-93a526f81c5a4ab9ae22f0fa33071b35
             CLAUDE_API_KEY=sk-qB2fhoAQqIfFx2I2Gplcw0wo9w9l6nzwOpTRaEhRG0ua1NU4
-            PORT=3001
+            PORT=3002
             EOF
 
             docker-compose down 2>/dev/null || true
